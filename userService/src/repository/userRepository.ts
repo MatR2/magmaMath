@@ -8,15 +8,13 @@ import { logError } from "../utils/logger";
 export class UserRepository {
   async CreateUser(createUserDto: CreateUserDto) {
     try {
-      const user = await User.findOne({ email: createUserDto.email });
-
       const newUser = await User.create(createUserDto);
       return newUser;
-    } catch (error: any) {
-      logError(error.message, "UserService");
-      if (error.code === 11000) {
+    } catch (e: any) {
+      if (e.code === 11000) {
         throw new APIError("User with givenn email already exists", 400);
       }
+      logError(e.message, "UserService");
       throw new APIError("Internal server error", 500);
     }
   }
@@ -29,8 +27,12 @@ export class UserRepository {
       }
 
       return user;
-    } catch (e) {
-      throw new APIError("Internal server error", 500);
+    } catch (e: any) {
+      if (e instanceof APIError) {
+      } else {
+        logError(e.message, "UserService");
+        throw new APIError("Internal server error", 500);
+      }
     }
   }
 
@@ -46,9 +48,12 @@ export class UserRepository {
       const users = await User.find().skip(offset).limit(pageSize).exec();
 
       return { maxPage: maxPage, page: actuallPage, users: users };
-    } catch (error) {
-      console.log(error);
-      throw new APIError("Internal server error", 500);
+    } catch (e: any) {
+      if (e instanceof APIError) {
+      } else {
+        logError(e.message, "UserService");
+        throw new APIError("Internal server error", 500);
+      }
     }
   }
 
@@ -61,19 +66,21 @@ export class UserRepository {
         throw new APIError("Not found", 404);
       }
       return updatedUser;
-    } catch (error) {
-      throw new APIError("Internal server error", 500);
+    } catch (e: any) {
+      if (e instanceof APIError) {
+      } else {
+        logError(e.message, "UserService");
+        throw new APIError("Internal server error", 500);
+      }
     }
   }
 
   async DeleteUser(id: string) {
     try {
       const user = await User.findByIdAndDelete(id);
-      if (!user) {
-        throw new APIError("Not found", 404);
-      }
       return user;
-    } catch (error) {
+    } catch (e: any) {
+      logError(e.message, "UserService");
       throw new APIError("Internal server error", 500);
     }
   }
