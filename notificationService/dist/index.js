@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const connection_1 = require("./amqp/connection");
 const handlers_1 = require("./amqp/handlers");
+const health_1 = __importDefault(require("./routes/health"));
+const logger_1 = require("./utils/logger");
 const port = process.env.PORT || 3000;
 const amqp = process.env.AMQP_ADDRESS || "amqp://localhost:5672";
 function StartServer() {
@@ -22,6 +24,7 @@ function StartServer() {
         try {
             const app = (0, express_1.default)();
             app.use(express_1.default.json());
+            app.use("/health", health_1.default);
             const consumer = new connection_1.Consumer(amqp, "user_service");
             yield consumer.connect();
             yield consumer.createQueue("user");
@@ -29,13 +32,17 @@ function StartServer() {
             yield consumer.bindToQueue("user", "user.deleted");
             consumer.listen("user", handlers_1.logUserServiceMessages);
             app.listen(port, () => __awaiter(this, void 0, void 0, function* () {
-                console.log("All good");
+                (0, logger_1.logInfo)(`Server listening on port ${port}`, "Notification");
             }));
         }
         catch (error) {
+            (0, logger_1.logError)(error.message, "Notification");
             process.exit(1);
         }
     });
 }
+process.on("uncaughtException", (error) => {
+    (0, logger_1.logError)(error.message);
+});
 StartServer();
 //# sourceMappingURL=index.js.map

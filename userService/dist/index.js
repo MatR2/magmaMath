@@ -18,6 +18,7 @@ const health_1 = __importDefault(require("./router/health"));
 const connection_1 = __importDefault(require("./db/connection"));
 const connect_1 = require("./amqp/connect");
 const logging_1 = require("./middlewares/logging");
+const logger_1 = require("./utils/logger");
 function StartServer() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -30,13 +31,17 @@ function StartServer() {
             app.use("/", userRouter_1.default);
             app.use("/health", health_1.default);
             app.listen(PORT, () => {
-                console.log(`User Service running on http://localhost:${PORT}`);
+                (0, logger_1.logInfo)(`Service running on http://localhost:${PORT}`);
             });
         }
         catch (error) {
+            (0, logger_1.logError)(error.message);
             process.exit(1);
         }
     });
 }
+process.on("uncaughtException", (error) => {
+    (0, logger_1.logError)(error.message);
+});
 StartServer();
 //# sourceMappingURL=index.js.map

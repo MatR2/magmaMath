@@ -27,4 +27,9 @@ async function StartServer() {
     process.exit(1);
   }
 }
+
+process.on("uncaughtException", (error: Error) => {
+  logError(error.message);
+});
+
 StartServer();

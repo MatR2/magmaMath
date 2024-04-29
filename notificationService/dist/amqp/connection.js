@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Consumer = void 0;
 const amqplib_1 = __importDefault(require("amqplib"));
+const logger_1 = require("../utils/logger");
 class Consumer {
     constructor(adress, exchange) {
         this.amqpAddres = adress;
@@ -29,7 +30,7 @@ class Consumer {
                 });
             }
             catch (error) {
-                console.log(error);
+                (0, logger_1.logError)(error.message, "Notification");
             }
         });
     }

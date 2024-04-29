@@ -4,7 +4,7 @@ import healthRouter from "./router/health";
 import connectDB from "./db/connection";
 import { getAmqpChannel } from "./amqp/connect";
 import { loggingMiddleware } from "./middlewares/logging";
-import { logInfo } from "./utils/logger";
+import { logError, logInfo } from "./utils/logger";
 import { SERVICE_NAME } from "./utils/const";
 
 async function StartServer() {
@@ -18,11 +18,16 @@ async function StartServer() {
     app.use("/", userRouter);
     app.use("/health", healthRouter);
     app.listen(PORT, () => {
-      logInfo(`Service running on http://localhost:${PORT}`, SERVICE_NAME);
+      logInfo(`Service running on http://localhost:${PORT}`);
     });
   } catch (error: any) {
+    logError(error.message);
     process.exit(1);
   }
 }
+
+process.on("uncaughtException", (error: Error) => {
+  logError(error.message);
+});
 
 StartServer();

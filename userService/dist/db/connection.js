@@ -34,15 +34,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.db = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
+const logger_1 = require("../utils/logger");
 const dbURI = process.env.MONGODB_URI || "mongodb://localhost:27017/userdb";
-console.log(dbURI);
 const connectDB = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield (0, mongoose_1.connect)(dbURI);
-        console.log("DB connected");
+        (0, logger_1.logInfo)("DB connected");
     }
     catch (error) {
-        console.log(error);
+        (0, logger_1.logError)(error.message);
         process.exit(1);
     }
 });

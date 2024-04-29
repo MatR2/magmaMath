@@ -1,5 +1,6 @@
 import winston from "winston";
 import path from "path";
+import { SERVICE_NAME } from "./const";
 
 const logPath = process.env.LOG_PATH || "./logs/";
 const infoPath = path.join(logPath, "info.log");
@@ -39,10 +40,10 @@ const errorLogger = winston.createLogger({
   ...logsConfig(errorPath),
 });
 
-export const logInfo = (message: string, service: string) => {
+export const logInfo = (message: string, service: string = SERVICE_NAME) => {
   infoLogger.info(message, { service: service });
 };
 
-export const logError = (message: string, service: string) => {
+export const logError = (message: string, service: string = SERVICE_NAME) => {
   errorLogger.error(message, { service: service });
 };

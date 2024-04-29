@@ -16,6 +16,7 @@ const createUserDTO_1 = require("../dto/createUserDTO");
 const class_transformer_1 = require("class-transformer");
 const updateUserDTO_1 = require("../dto/updateUserDTO");
 const connect_1 = require("../amqp/connect");
+const logger_1 = require("../utils/logger");
 class UserController {
     constructor() {
         this.userService = new userService_1.UserService();
@@ -29,7 +30,7 @@ class UserController {
                 res.status(201).json(user);
             }
             catch (error) {
-                console.log(error);
+                (0, logger_1.logError)(error);
                 if (error instanceof apiError_1.APIError)
                     res.status(error.errorCode).json({ message: error.message });
                 else {
@@ -51,7 +52,7 @@ class UserController {
                 res.json(users);
             }
             catch (error) {
-                console.log(error);
+                (0, logger_1.logError)(error);
                 if (error instanceof apiError_1.APIError)
                     res.status(error.errorCode).json({ message: error.message });
                 else {
@@ -76,6 +77,7 @@ class UserController {
                 if (error instanceof apiError_1.APIError)
                     res.status(error.errorCode).json({ message: error.message });
                 else {
+                    (0, logger_1.logError)(error.message);
                     res.status(500).json({ message: "Internal server error" });
                 }
             }
@@ -98,6 +100,7 @@ class UserController {
                 if (error instanceof apiError_1.APIError)
                     res.status(error.errorCode).json({ message: error.message });
                 else {
+                    (0, logger_1.logError)(error.message);
                     res.status(500).json({ message: "Internal server error" });
                 }
             }
@@ -115,6 +118,7 @@ class UserController {
                 if (error instanceof apiError_1.APIError)
                     res.status(error.errorCode).json({ message: error.message });
                 else {
+                    (0, logger_1.logError)(error.message);
                     res.status(500).json({ message: "Internal server error" });
                 }
             }

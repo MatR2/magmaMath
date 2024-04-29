@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.publishMessage = exports.getAmqpChannel = void 0;
 const amqplib_1 = __importDefault(require("amqplib"));
+const logger_1 = require("../utils/logger");
 const address = process.env.AMQP_ADDRESS || "amqp://localhost:5672";
-console.log(address);
 let amqpInstance = null;
 let amqpChannel = null;
 const connect = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -25,10 +25,10 @@ const connect = () => __awaiter(void 0, void 0, void 0, function* () {
         yield amqpChannel.assertExchange("user_service", "direct", {
             durable: true,
         });
-        console.log("Rabbitmq connected");
+        (0, logger_1.logInfo)("Rabbitmq connected", "User service");
     }
     catch (error) {
-        console.log("Rabbitmq connection error");
+        (0, logger_1.logInfo)("Rabbitmq connection error", "User service");
     }
 });
 const getAmqpChannel = () => __awaiter(void 0, void 0, void 0, function* () {
