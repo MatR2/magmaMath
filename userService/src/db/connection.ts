@@ -1,13 +1,14 @@
 import mongoose, { connect } from "mongoose";
+import { logError, logInfo } from "../utils/logger";
 
 const dbURI = process.env.MONGODB_URI || "mongodb://localhost:27017/userdb";
-console.log(dbURI);
+
 const connectDB = async () => {
   try {
     await connect(dbURI);
-    console.log("DB connected");
-  } catch (error) {
-    console.log(error);
+    logInfo("DB connected");
+  } catch (error: any) {
+    logError(error.message);
     process.exit(1);
   }
 };

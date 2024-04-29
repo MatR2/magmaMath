@@ -2,6 +2,7 @@ import express from "express";
 import { Consumer } from "./amqp/connection";
 import { logUserServiceMessages } from "./amqp/handlers";
 import healthRouter from "./routes/health";
+import { logError, logInfo } from "./utils/logger";
 
 const port = process.env.PORT || 3000;
 const amqp = process.env.AMQP_ADDRESS || "amqp://localhost:5672";
@@ -19,9 +20,10 @@ async function StartServer() {
     await consumer.bindToQueue("user", "user.deleted");
     consumer.listen("user", logUserServiceMessages);
     app.listen(port, async () => {
-      console.log("All good");
+      logInfo(`Server listening on port ${port}`, "Notification");
     });
-  } catch (error) {
+  } catch (error: any) {
+    logError(error.message, "Notification");
     process.exit(1);
   }
 }

@@ -1,4 +1,5 @@
 import amqplib from "amqplib";
+import { logError } from "../utils/logger";
 
 export class Consumer {
   private amqpInstance: amqplib.Connection;
@@ -18,8 +19,8 @@ export class Consumer {
       await this.amqpChannel.assertExchange(this.exchange, "direct", {
         durable: true,
       });
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      logError(error.message, "Notification");
     }
   }
 

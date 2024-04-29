@@ -6,6 +6,7 @@ import { plainToInstance } from "class-transformer";
 import { UpdateUserDto } from "../dto/updateUserDTO";
 import amqplib from "amqplib";
 import { publishMessage } from "../amqp/connect";
+import { logError } from "../utils/logger";
 
 export class UserController {
   private userService: UserService;
@@ -21,7 +22,7 @@ export class UserController {
       await publishMessage("user.created", JSON.stringify(user));
       res.status(201).json(user);
     } catch (error: any) {
-      console.log(error);
+      logError(error);
       if (error instanceof APIError)
         res.status(error.errorCode).json({ message: error.message });
       else {
@@ -41,7 +42,7 @@ export class UserController {
       const users = await this.userService.GetUsers(page, pageSize);
       res.json(users);
     } catch (error: any) {
-      console.log(error);
+      logError(error);
       if (error instanceof APIError)
         res.status(error.errorCode).json({ message: error.message });
       else {
@@ -63,6 +64,7 @@ export class UserController {
       if (error instanceof APIError)
         res.status(error.errorCode).json({ message: error.message });
       else {
+        logError(error.message);
         res.status(500).json({ message: "Internal server error" });
       }
     }
@@ -82,6 +84,7 @@ export class UserController {
       if (error instanceof APIError)
         res.status(error.errorCode).json({ message: error.message });
       else {
+        logError(error.message);
         res.status(500).json({ message: "Internal server error" });
       }
     }
@@ -97,6 +100,7 @@ export class UserController {
       if (error instanceof APIError)
         res.status(error.errorCode).json({ message: error.message });
       else {
+        logError(error.message);
         res.status(500).json({ message: "Internal server error" });
       }
     }

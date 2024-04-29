@@ -1,7 +1,7 @@
 import amqplib from "amqplib";
+import { logInfo } from "../utils/logger";
 
 const address = process.env.AMQP_ADDRESS || "amqp://localhost:5672";
-console.log(address);
 let amqpInstance: amqplib.Connection | null = null;
 let amqpChannel: amqplib.Channel | null = null;
 
@@ -12,9 +12,9 @@ const connect = async () => {
     await amqpChannel!.assertExchange("user_service", "direct", {
       durable: true,
     });
-    console.log("Rabbitmq connected");
+    logInfo("Rabbitmq connected", "User service");
   } catch (error) {
-    console.log("Rabbitmq connection error");
+    logInfo("Rabbitmq connection error", "User service");
   }
 };
 
