@@ -1,0 +1,41 @@
+version: "3"
+services:
+  user-service:
+    build: ./userService
+    ports:
+      - "3001:3000"
+    depends_on:
+      - mongo
+      - rabbitmq
+    env_file:
+      - ./userService/.env
+
+  notification-service:
+    build: ./notificationService
+    ports:
+      - "3002:3000"
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ./notificationService/.env
+
+  api-gateway:
+    build: ./apiGateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-service
+      - notification-service
+    env_file:
+      - ./apiGateway/.env
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"

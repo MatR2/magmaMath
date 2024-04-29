@@ -1,2 +1,4 @@
 .vscode
-./userService/node_modules/
+userService/node_modules
+apiGateway/node_modules
+notificationService/node_modules
