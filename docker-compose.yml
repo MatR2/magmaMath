@@ -1,6 +1,6 @@
 version: "3"
 services:
-  user-service:
+  userservice:
     build: ./userService
     ports:
       - "3001:3000"
@@ -10,7 +10,7 @@ services:
     env_file:
       - ./userService/.env
 
-  notification-service:
+  notificationservice:
     build: ./notificationService
     ports:
       - "3002:3000"
@@ -19,13 +19,13 @@ services:
     env_file:
       - ./notificationService/.env
 
-  api-gateway:
+  apigateway:
     build: ./apiGateway
     ports:
       - "8080:8080"
     depends_on:
-      - user-service
-      - notification-service
+      - userservice
+      - notificationservice
     env_file:
       - ./apiGateway/.env
 

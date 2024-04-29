@@ -15,19 +15,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserRepository = void 0;
 const user_1 = __importDefault(require("../model/user"));
 const apiError_1 = require("../utils/apiError");
+const logger_1 = require("../utils/logger");
 class UserRepository {
     CreateUser(createUserDto) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const user = yield user_1.default.findOne({ email: createUserDto.email });
                 const newUser = yield user_1.default.create(createUserDto);
                 return newUser;
             }
-            catch (error) {
-                console.log(error);
-                if (error.code === 11000) {
+            catch (e) {
+                if (e.code === 11000) {
                     throw new apiError_1.APIError("User with givenn email already exists", 400);
                 }
+                (0, logger_1.logError)(e.message, "UserService");
                 throw new apiError_1.APIError("Internal server error", 500);
             }
         });
@@ -36,12 +36,10 @@ class UserRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const user = yield user_1.default.findById(id).exec();
-                if (!user) {
-                    throw new apiError_1.APIError("Not found", 404);
-                }
                 return user;
             }
             catch (e) {
+                (0, logger_1.logError)(e.message, "UserService");
                 throw new apiError_1.APIError("Internal server error", 500);
             }
         });
@@ -49,18 +47,21 @@ class UserRepository {
     GetUsers() {
         return __awaiter(this, arguments, void 0, function* (page = 1, pageSize = 10) {
             try {
-                let actuallPage = page - 1;
-                if (actuallPage < 0) {
-                    actuallPage = 0;
+                if (page <= 0) {
+                    page = 1;
                 }
-                const offset = actuallPage * pageSize;
+                let offset = (page - 1) * pageSize;
                 const collectionSize = yield user_1.default.estimatedDocumentCount().exec();
                 const maxPage = Math.ceil(collectionSize / pageSize);
+                if (page > maxPage) {
+                    page = maxPage;
+                    offset = (maxPage - 1) * pageSize;
+                }
                 const users = yield user_1.default.find().skip(offset).limit(pageSize).exec();
-                return { maxPage: maxPage, page: actuallPage, users: users };
+                return { maxPage: maxPage, page: page, users: users };
             }
-            catch (error) {
-                console.log(error);
+            catch (e) {
+                (0, logger_1.logError)(e.message, "UserService");
                 throw new apiError_1.APIError("Internal server error", 500);
             }
         });
@@ -71,12 +72,10 @@ class UserRepository {
                 const updatedUser = yield user_1.default.findByIdAndUpdate(id, updateUserData, {
                     new: true,
                 }).exec();
-                if (!updatedUser) {
-                    throw new apiError_1.APIError("Not found", 404);
-                }
                 return updatedUser;
             }
-            catch (error) {
+            catch (e) {
+                (0, logger_1.logError)(e.message, "UserService");
                 throw new apiError_1.APIError("Internal server error", 500);
             }
         });
@@ -85,12 +84,10 @@ class UserRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const user = yield user_1.default.findByIdAndDelete(id);
-                if (!user) {
-                    throw new apiError_1.APIError("Not found", 404);
-                }
                 return user;
             }
-            catch (error) {
+            catch (e) {
+                (0, logger_1.logError)(e.message, "UserService");
                 throw new apiError_1.APIError("Internal server error", 500);
             }
         });
