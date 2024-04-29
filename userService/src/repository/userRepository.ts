@@ -22,38 +22,31 @@ export class UserRepository {
   async GetUserById(id: string) {
     try {
       const user = await User.findById(id).exec();
-      if (!user) {
-        throw new APIError("Not found", 404);
-      }
-
       return user;
     } catch (e: any) {
-      if (e instanceof APIError) {
-      } else {
-        logError(e.message, "UserService");
-        throw new APIError("Internal server error", 500);
-      }
+      logError(e.message, "UserService");
+      throw new APIError("Internal server error", 500);
     }
   }
 
   async GetUsers(page: number = 1, pageSize: number = 10) {
     try {
-      let actuallPage = page - 1;
-      if (actuallPage < 0) {
-        actuallPage = 0;
+      if (page <= 0) {
+        page = 1;
       }
-      const offset = actuallPage * pageSize;
+      let offset = (page - 1) * pageSize;
       const collectionSize = await User.estimatedDocumentCount().exec();
       const maxPage = Math.ceil(collectionSize / pageSize);
+      if (page > maxPage) {
+        page = maxPage;
+        offset = (maxPage - 1) * pageSize;
+      }
       const users = await User.find().skip(offset).limit(pageSize).exec();
 
-      return { maxPage: maxPage, page: actuallPage, users: users };
+      return { maxPage: maxPage, page: page, users: users };
     } catch (e: any) {
-      if (e instanceof APIError) {
-      } else {
-        logError(e.message, "UserService");
-        throw new APIError("Internal server error", 500);
-      }
+      logError(e.message, "UserService");
+      throw new APIError("Internal server error", 500);
     }
   }
 
@@ -62,16 +55,11 @@ export class UserRepository {
       const updatedUser = await User.findByIdAndUpdate(id, updateUserData, {
         new: true,
       }).exec();
-      if (!updatedUser) {
-        throw new APIError("Not found", 404);
-      }
+
       return updatedUser;
     } catch (e: any) {
-      if (e instanceof APIError) {
-      } else {
-        logError(e.message, "UserService");
-        throw new APIError("Internal server error", 500);
-      }
+      logError(e.message, "UserService");
+      throw new APIError("Internal server error", 500);
     }
   }
 

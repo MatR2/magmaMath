@@ -65,7 +65,12 @@ class UserController {
             try {
                 const id = req.params.id;
                 const users = yield this.userService.GetUser(id);
-                res.json(users);
+                if (!users) {
+                    res.status(404).json({ message: "User does not exists" });
+                }
+                else {
+                    res.json(users);
+                }
             }
             catch (error) {
                 if (error instanceof apiError_1.APIError)
@@ -82,7 +87,12 @@ class UserController {
                 const id = req.params.id;
                 const data = (0, class_transformer_1.plainToInstance)(updateUserDTO_1.UpdateUserDto, req.body);
                 const users = yield this.userService.UpdateUser(id, data);
-                res.status(203).json(users);
+                if (!users) {
+                    res.status(404).send();
+                }
+                else {
+                    res.status(204).send();
+                }
             }
             catch (error) {
                 if (error instanceof apiError_1.APIError)
@@ -99,7 +109,7 @@ class UserController {
                 const id = req.params.id;
                 const user = yield this.userService.DeleteUser(id);
                 yield (0, connect_1.publishMessage)("user.deleted", JSON.stringify(user));
-                res.status(201).json(user);
+                res.status(204).json(user);
             }
             catch (error) {
                 if (error instanceof apiError_1.APIError)

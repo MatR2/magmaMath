@@ -54,7 +54,11 @@ export class UserController {
     try {
       const id = req.params.id;
       const users = await this.userService.GetUser(id);
-      res.json(users);
+      if (!users) {
+        res.status(404).json({ message: "User does not exists" });
+      } else {
+        res.json(users);
+      }
     } catch (error: any) {
       if (error instanceof APIError)
         res.status(error.errorCode).json({ message: error.message });
@@ -69,7 +73,11 @@ export class UserController {
       const id = req.params.id;
       const data = plainToInstance(UpdateUserDto, req.body);
       const users = await this.userService.UpdateUser(id, data);
-      res.status(203).json(users);
+      if (!users) {
+        res.status(404).send();
+      } else {
+        res.status(204).send();
+      }
     } catch (error: any) {
       if (error instanceof APIError)
         res.status(error.errorCode).json({ message: error.message });
@@ -84,7 +92,7 @@ export class UserController {
       const id = req.params.id;
       const user = await this.userService.DeleteUser(id);
       await publishMessage("user.deleted", JSON.stringify(user));
-      res.status(201).json(user);
+      res.status(204).json(user);
     } catch (error: any) {
       if (error instanceof APIError)
         res.status(error.errorCode).json({ message: error.message });
